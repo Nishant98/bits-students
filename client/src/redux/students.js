@@ -17,7 +17,8 @@ export const Students = (state = {
             return {...state, isLoading: false, errMess: action.payload, students: []};
 
         case ActionTypes.ADD_STUDENT:
-            return {...state, isLoading: false, errMess: null, students: students.concat(action.payload)};
+            console.log(action.payload)
+            return {...state, isLoading: false, errMess: null, students: state.students.concat(action.payload)};
 
         default:
             return state;

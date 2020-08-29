@@ -38,6 +38,8 @@ class Main extends Component {
           <Home students={this.props.students.students} 
                 isLoading={this.props.students.isLoading}
                 errMess={this.props.students.errMess}
+                resetForm={this.props.resetForm}
+                callAddStudent = {this.props.postStudent}
           />
       );
     }

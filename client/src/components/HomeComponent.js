@@ -1,53 +1,124 @@
-import React from 'react';
-import { Card, CardImg, CardBody, CardTitle, CardSubtitle, CardText } from 'reactstrap';
+import React, { Component } from 'react';
+import {  Table, Button, Modal, ModalBody, ModalHeader, Row, Col, Label } from 'reactstrap';
 import { Loading } from './LoadingComponent';
-import { baseUrl } from '../shared/baseUrl';
+import { Control, Form } from 'react-redux-form';
+import { InitialForm } from '../redux/forms.js';
 
-function RenderCard({item, isLoading, errMess}){
-    if(isLoading){
-        return(
-            <Loading />
-        );
-    }
-    else if(errMess){
-        return(
-            <h4>{errMess}</h4>       
-        );
-    }
-    else{
-        return(
-            <FadeTransform in transformProps={{
-                exitTransform: 'scale(0.5) translateY(-50%)'
-                }}>
-                <Card>
-                    <CardImg src={baseUrl + item.image} alt={item.name} />
-                    <CardBody>
-                        <CardTitle>{item.name}</CardTitle>
-                        {item.designation ? <CardSubtitle>{item.designation}</CardSubtitle> : null}
-                        <CardText>{item.description}</CardText>
-                    </CardBody>
-                </Card>
-            </FadeTransform>    
-        );
-    }
+function RenderStudent({studentId, studentName}){
+    
+    return(
+        <tr>
+            <td>{studentId}</td>
+            <td>{studentName}</td>
+        </tr>
+    );
 }
 
-function Home(props) {
-    return(
-        <div className="container">
-            <div className="row align-items-start">
-                <div className="col-12 col-md m-1">
-                    <RenderCard item={props.dish} isLoading={props.dishesLoading} errMess={props.dishesErrMess} />
+class Home extends Component {
+
+    constructor(props){
+        super(props);
+        
+        this.state = {
+            isModalOpen: true,
+        };
+    }
+
+    toggleModal = (modalProps = '', studentId = '', studentName = '') => {
+        this.props.resetForm();
+        InitialForm.studentId = studentId;
+        InitialForm.studentName = studentName;
+        this.setState({
+            isModalOpen: !this.state.isModalOpen
+        });        
+    }
+
+    handleSubmit = (values) => {
+
+            this.toggleModal();
+            this.props.callAddStudent(values.studentId, values.studentName)
+            this.props.resetForm();    
+    }
+
+
+    render() {
+        const students = this.props.students.map(student => {
+            return (
+                <RenderStudent key={student.studentId} studentName={student.studentName} studentId={student.studentId} toggleModal={this.toggleModal} /> 
+            );
+        })
+        
+        if(this.props.isLoading) {
+            return(
+                <div className="container">
+                    <div className="row">
+                        <Loading />
+                    </div>
                 </div>
-                <div className="col-12 col-md m-1">
-                    <RenderCard item={props.promotion} isLoading={props.promosLoading} errMess={props.promosErrMess} />
+            );
+        }
+        else if(this.props.errMess){
+            return(
+                <div className="container offset-4 mt-5">
+                    <div className="row offset-1 mb-3">
+                        <h4>{this.props.errMess}</h4>
+                    </div>
+                    <div className="row">
+                        <img width="40%" src="assets/images/cancel.svg" alt="" />
+                    </div>
+                </div> 
+            );
+        }
+        else{
+            return(
+                <div className="container">                 
+                    <div className="row">
+                        <div className="col-md-12">
+                            <Button onClick={() => this.toggleModal}>Add Student</Button>
+                            <Table dark bordered responsive hover>
+                                <thead>
+                                    <tr className="text-center">
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="text-center">
+                                    {students}
+                                </tbody>
+                            </Table>
+                        </div>
+                    </div>
+
+                    <div className="row">
+                        <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
+                            <ModalHeader toggle={this.toggleModal}>Add Student</ModalHeader>
+                            <ModalBody>
+                                <Form model="form" onSubmit={(values) => this.handleSubmit(values)}>
+                                    <Row className="form-group">
+                                        <Label htmlFor="studentId" md={12}>Student Id</Label>
+                                        <Col md={12}>
+                                            <Control.text noValidate model=".studentId" id="studentId" name="studentId" placeholder="Student ID" className="form-control" />
+                                        </Col>
+                                    </Row>
+                                    <Row className="form-group">
+                                        <Label htmlFor="studentName" md={12}>Student Name</Label>
+                                        <Col md={12}>
+                                            <Control.text noValidate model=".studentName" id="studentName" name="studentName" placeholder="Student Name" className="form-control" />
+                                        </Col>
+                                    </Row>
+                                    <Row className="form-group">
+                                        <Col md={{size:12}}>
+                                            <Button type="submit" color="primary">Add</Button>
+                                        </Col>
+                                    </Row>
+                                </Form> 
+                            </ModalBody>
+                        </Modal>
+                    </div>
                 </div>
-                <div className="col-12 col-md m-1">
-                    <RenderCard item={props.leader} isLoading={props.leadersLoading} errMess={props.leadersErrMess} />
-                </div>
-            </div>
-        </div>
-    );
+            );
+        }
+    }
 }
 
 export default Home;

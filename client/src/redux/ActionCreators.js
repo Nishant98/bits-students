@@ -34,7 +34,7 @@ export const postStudent = (studentId, studentName) => (dispatch) => {
             throw errmess
         })
         .then(response => response.json())
-        .then(response => dispatch(addStudent(response)))
+        .then(response => dispatch(addStudent(newStudent)))
         .catch(error => { console.log('Post comments ', error.message);
         alert('Error: ' + error.message);});
 }
