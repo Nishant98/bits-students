@@ -4,8 +4,8 @@ const mysql = require("mysql");
 	({
 		host: "bits-students.c9yraifh43be.us-east-1.rds.amazonaws.com",
 		port: 3306,
-	  	user: "admin",
-	  	password: "12345678",
+	  	user: "",
+	  	password: "",
 	  	database: "StudentInformation"
 	});
 
